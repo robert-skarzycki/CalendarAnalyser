@@ -16,9 +16,11 @@ jobs:
     - name: Set Version variable
       env:
         SHA: ${{ github.sha }}
-      run: echo "VERSION=$VERSION-${SHA::7}" >> $GITHUB_ENV
+      run: echo "VERSION=$VERSION-dev-${SHA::7}" >> $GITHUB_ENV
     - run: echo "Building for version $VERSION"
     - name: Build
-      run: dotnet build src/CalendarAnalyser/CalendarAnalyser.Core/CalendarAnalyser.Core.csproj --configuration Release
+      run: dotnet build src/CalendarAnalyser/CalendarAnalyser.Core/CalendarAnalyser.Core.csproj --configuration Release /p:Version=$VERSION
     - name: Test
-      run: dotnet test src/CalendarAnalyser/CalendarAnalyser.Core.Tests/CalendarAnalyser.Core.Tests.csproj --configuration Release --no-build
+      run: dotnet test src/CalendarAnalyser --configuration Release --no-build
+    - name: pack nuget packages
+      run: dotnet pack --output nupkgs --no-restore --no-build /p:PackageVersion=$VERSION
