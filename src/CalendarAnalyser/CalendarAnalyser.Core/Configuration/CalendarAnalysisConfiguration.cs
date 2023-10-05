@@ -55,4 +55,8 @@ public class CalendarAnalysisConfiguration
     }
 
     public ICollection<IAnalysisRule> Rules { get; set; }
+
+    public DateTime AnalysisStartDate { get; set; }
+    public DateTime AnalysisEndDate { get; set; }
+
 }

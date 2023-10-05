@@ -41,6 +41,20 @@ public class CalendarAnalysisConfigurationBuilder
         return this;
     }
 
+    public CalendarAnalysisConfigurationBuilder WithOnlyWorkingDays()
+    {
+        configuration.OnlyWorkingDays = true;
+        return this;
+    }
+
+    public CalendarAnalysisConfigurationBuilder WithAnalysisDateRange(DateTime analysisStartDate, DateTime analysisEndDate)
+    {
+        configuration.AnalysisStartDate = analysisStartDate;
+        configuration.AnalysisEndDate = analysisEndDate;
+
+        return this;
+    }
+
     public CalendarAnalysisConfiguration Build()
     {
         return configuration;
