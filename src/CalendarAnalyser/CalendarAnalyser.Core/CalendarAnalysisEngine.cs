@@ -7,7 +7,6 @@ namespace CalendarAnalyser.Core;
 
 public class CalendarAnalysisEngine
 {
-    private const string OtherCategoryName = "Other";
     private readonly CalendarAnalysisConfiguration configuration;
 
     public CalendarAnalysisEngine(CalendarAnalysisConfiguration configuration)
@@ -21,15 +20,41 @@ public class CalendarAnalysisEngine
 
         var totalDurationPerCategory = AnalyzeInCategories(meetings);
 
-        var result = new CalendarAnalysisResult(totalDurationPerCategory);
+        var totalWorkingTime = CalculateTotalWorkingTime();
+
+        var result = new CalendarAnalysisResult(totalDurationPerCategory, totalWorkingTime);
 
         return result;
+    }
+
+    private TimeSpan CalculateTotalWorkingTime()
+    {
+        var totalDays = 0.0;
+        if (!configuration.OnlyWorkingDays)
+        {
+            totalDays = (configuration.AnalysisEndDate.Date - configuration.AnalysisStartDate.Date).TotalDays + 1.0;
+        }
+        else
+        {
+
+            var currentDate = configuration.AnalysisStartDate.Date;
+            while (currentDate <= configuration.AnalysisEndDate)
+            {
+                if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    totalDays += 1.0;
+                }
+                currentDate = currentDate.AddDays(1);
+            }
+        }
+
+        return TimeSpan.FromMinutes(totalDays * (configuration.CoreHoursEndTime - configuration.CoreHoursStartTime).TotalMinutes);
     }
 
     private Dictionary<string, TimeSpan> AnalyzeInCategories(IEnumerable<Meeting> meetings)
     {
         var categories = configuration.Rules.ToDictionary(r => r.Category, _ => TimeSpan.Zero);
-        categories.Add(OtherCategoryName, TimeSpan.Zero);
+        categories.Add(Constants.OtherCategoryName, TimeSpan.Zero);
 
         foreach(var meeting in meetings)
         {
@@ -48,7 +73,7 @@ public class CalendarAnalysisEngine
             }
             else
             {
-                var categoryName = matchingRules.Length == 0 ? OtherCategoryName : matchingRules.First().Category;
+                var categoryName = matchingRules.Length == 0 ? Constants.OtherCategoryName : matchingRules.First().Category;
 
                 categories[categoryName] += meetingDuration;
             }
