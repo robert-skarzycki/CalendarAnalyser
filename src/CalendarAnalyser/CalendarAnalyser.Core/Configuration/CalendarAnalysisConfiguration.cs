@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CalendarAnalyser.Core;
+namespace CalendarAnalyser.Core.Configuration;
 
 public class CalendarAnalysisConfiguration
 {
@@ -23,7 +23,7 @@ public class CalendarAnalysisConfiguration
             {
                 throw new ArgumentOutOfRangeException("Core hours star time cannot be greater than 23:59:59");
             }
-            if(value > coreHoursEndTime)
+            if (value > coreHoursEndTime)
             {
                 throw new ArgumentOutOfRangeException($"Core hours start time cannot be greater than core hours end time which is {coreHoursEndTime}");
             }
