@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Title>Calendar Analyser Core</Title>
+    <Version>$(VersionPrefix)</Version>
+    <Authors>robert-skarzycki</Authors>
+    <RepositoryUrl>https://github.com/robert-skarzycki/CalendarAnalyser</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>
