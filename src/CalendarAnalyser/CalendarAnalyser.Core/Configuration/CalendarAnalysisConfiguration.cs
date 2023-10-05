@@ -5,11 +5,11 @@ namespace CalendarAnalyser.Core.Configuration;
 
 public class CalendarAnalysisConfiguration
 {
-    private TimeSpan coreHoursStartTime = TimeSpan.FromHours(9);
-    private TimeSpan coreHoursEndTime = TimeSpan.FromHours(15);
+    private TimeSpan coreHoursStartTime;
+    private TimeSpan coreHoursEndTime;
 
-    public bool OnlyWorkingDays { get; set; } = true;
-    public TimeSpan TimeResolution { get; set; } = TimeSpan.FromMinutes(30);
+    public bool OnlyWorkingDays { get; set; };
+    public TimeSpan TimeResolution { get; set; };
     public TimeSpan CoreHoursStartTime
     {
         get { return coreHoursStartTime; }

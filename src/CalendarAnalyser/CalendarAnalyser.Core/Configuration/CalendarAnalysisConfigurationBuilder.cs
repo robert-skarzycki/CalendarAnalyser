@@ -5,7 +5,14 @@ namespace CalendarAnalyser.Core.Configuration;
 
 public class CalendarAnalysisConfigurationBuilder 
 {
-    private readonly CalendarAnalysisConfiguration configuration = new();
+    private readonly CalendarAnalysisConfiguration configuration = new()
+    {
+        CoreHoursStartTime = TimeSpan.FromHours(9),
+        CoreHoursEndTime = TimeSpan.FromHours(15),
+        OnlyWorkingDays = true,
+        TimeResolution = TimeSpan.FromMinutes(30),
+        Rules = new 
+    };
 
     public CalendarAnalysisConfigurationBuilder WithTimeResolution(TimeSpan timeResolution)
     {
@@ -27,7 +34,10 @@ public class CalendarAnalysisConfigurationBuilder
 
     public CalendarAnalysisConfigurationBuilder WithRules(ICollection<IAnalysisRule> rules)
     {
-        configuration.Rules = rules;
+        foreach (var rule in rules)
+        {
+            configuration.Rules.Add(rule);
+        }
         return this;
     }
 
