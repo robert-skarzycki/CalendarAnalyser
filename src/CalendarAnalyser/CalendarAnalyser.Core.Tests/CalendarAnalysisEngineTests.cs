@@ -9,54 +9,84 @@ public class CalendarAnalysisEngineTests
     [Fact]
     public void WhenNoRulesMatching_ShouldFallbackToOtherCategory()
     {
-        var configuration = new CalendarAnalysisConfigurationBuilder()
+        var configuration = TestConfigurationBuilder()
             .WithRules(new[] { new RegexAnalysisRule(new Regex("NotDummy"), "NotDummy") })
             .Build();
         
         var sut = new CalendarAnalysisEngine(configuration);
 
         var result = sut.Analyze(new[] { 
-            new DummyMeeting((10, 0), (10, 30)),
-            new DummyMeeting((11, 0), (11, 30))
+            DummyMeeting((10, 0),(10, 30)),
+            DummyMeeting((11, 0),(11, 30))
         });
 
-        result.TotalDurationPerCategory["NotDummy"].TotalMinutes.Should().Be(0, "no meeting matches");
-        result.TotalDurationPerCategory["Other"].TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
+        result.Categories["NotDummy"].TotalDuration.TotalMinutes.Should().Be(0, "no meeting matches");
+        result.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
     }
 
     [Fact]
     public void WhenRuleMatches_ShouldSumAllMatchingMeetings()
     {
-        var configuration = new CalendarAnalysisConfigurationBuilder()
+        var configuration = TestConfigurationBuilder()
             .WithRules(new[] { new RegexAnalysisRule(new Regex("Dummy"), "Dummy") })
             .Build();
 
         var sut = new CalendarAnalysisEngine(configuration);
 
         var result = sut.Analyze(new[] {
-            new DummyMeeting((10, 0), (10, 30)),
-            new DummyMeeting((11, 0), (11, 30))
+            DummyMeeting((10, 0), (10, 30)),
+            DummyMeeting((11, 0), (11, 30))
         });
 
-        result.TotalDurationPerCategory["Other"].TotalMinutes.Should().Be(0, "all meeting matches a rule");
-        result.TotalDurationPerCategory["Dummy"].TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
+        result.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(0, "all meeting matches a rule");
+        result.Categories["Dummy"].TotalDuration.TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
     }
 
     [Fact]
     public void WhenMeetingStartsEarlierThenCoreHours_ShouldBeTrimmed()
     {
-        var configuration = new CalendarAnalysisConfigurationBuilder()
+        var configuration = TestConfigurationBuilder()
             .WithCoreHoursStartAt(TimeSpan.FromHours(8))
             .Build();
 
         var sut = new CalendarAnalysisEngine(configuration);
 
         var result = sut.Analyze(new[] {
-            new DummyMeeting((7, 0), (9, 0))
+            DummyMeeting((7, 0), (9, 0))
         });
 
-        result.TotalDurationPerCategory["Other"].TotalMinutes.Should().Be(60, "120 min meeting should be trimmed by 60 minnutes (only 8:00-9:00 counts)");
+        result.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(60, "120 min meeting should be trimmed by 60 minnutes (only 8:00-9:00 counts)");
     }
-}
 
-public record DummyMeeting((int, int) StartTime, (int, int)EndTime) : Meeting("Dummy", new DateTime(2023, 8, 1, StartTime.Item1, StartTime.Item2, 0), new DateTime(2023, 8, 1, EndTime.Item1, EndTime.Item2, 0), 1, "john.smith@company.com", false, false);
+    [Fact]
+    public void WhenOnlyWorkingDays_WeekendShouldNotBeCountedInFreeTime()
+    {
+        var configuration = TestConfigurationBuilder()
+            .WithCoreHoursStartAt(TimeSpan.FromHours(8))
+            .WithCoreHoursEndAt(TimeSpan.FromHours(16))
+            .WithOnlyWorkingDays()
+            .Build();
+
+        var sut = new CalendarAnalysisEngine(configuration);
+
+        var result = sut.Analyze(new[] {
+            DummyMeeting(7, 31, (8, 0), (16, 0)),
+            DummyMeeting(8, 1, (8, 0), (16, 0)),
+            DummyMeeting(8, 2, (8, 0), (16, 0)),
+            DummyMeeting(8, 3, (8, 0), (16, 0)),
+            DummyMeeting(8, 4, (8, 0), (16, 0)),
+        });
+
+        result.Categories[Constants.OtherCategoryName].Percentage.Should().Be(0.5, "1 week full in meetings, other not, weekend - excluded");
+        result.Categories[Constants.FreeCategoryName].Percentage.Should().Be(0.5, "1 week full in meetings, other not, weekend - excluded");
+        result.Categories[Constants.FreeCategoryName].TotalDuration.TotalHours.Should().Be(40, "second week free, weekend - excluded");
+    }
+
+    private CalendarAnalysisConfigurationBuilder TestConfigurationBuilder()
+    {
+        return new CalendarAnalysisConfigurationBuilder().WithAnalysisDateRange(new DateTime(2023, 7, 31), new DateTime(2023, 8, 13));
+    }
+
+    private Meeting DummyMeeting((int, int) startTime, (int, int) endTime) => new("Dummy", new DateTime(2023, 8, 1, startTime.Item1, startTime.Item2, 0), new DateTime(2023, 8, 1, endTime.Item1, endTime.Item2, 0), 1, "john.smith@company.com", false, false);
+    private Meeting DummyMeeting(int month, int day, (int, int) startTime, (int, int) endTime) => new("Dummy", new DateTime(2023, month, day, startTime.Item1, startTime.Item2, 0), new DateTime(2023, month, day, endTime.Item1, endTime.Item2, 0), 1, "john.smith@company.com", false, false);
+}
