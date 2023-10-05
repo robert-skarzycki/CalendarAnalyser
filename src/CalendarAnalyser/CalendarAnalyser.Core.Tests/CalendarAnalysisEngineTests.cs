@@ -23,8 +23,27 @@ public class CalendarAnalysisEngineTests
         });
 
         result.TotalDurationPerCategory["NotDummy"].TotalMinutes.Should().Be(0, "no meeting matches");
-        result.TotalDurationPerCategory.ContainsKey("Other").Should().BeTrue("it should fallback to Other");
         result.TotalDurationPerCategory["Other"].TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
+    }
+
+    [Fact]
+    public void WhenRuleMatches_ShouldSumAllMatchingMeetings()
+    {
+        var configuration = new CalendarAnalysisConfiguration()
+        {
+            CoreHoursStartTime = TimeSpan.FromHours(8),
+            CoreHoursEndTime = TimeSpan.FromHours(16),
+            Rules = new[] { new RegexAnalysisRule(new Regex("Dummy"), "Dummy") }
+        };
+        var sut = new CalendarAnalysisEngine(configuration);
+
+        var result = sut.Analyze(new[] {
+            new DummyMeeting((10, 0), (10, 30)),
+            new DummyMeeting((11, 0), (11, 30))
+        });
+
+        result.TotalDurationPerCategory["Other"].TotalMinutes.Should().Be(0, "all meeting matches a rule");
+        result.TotalDurationPerCategory["Dummy"].TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
     }
 }
 
