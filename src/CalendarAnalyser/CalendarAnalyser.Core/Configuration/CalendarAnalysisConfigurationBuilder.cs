@@ -5,7 +5,7 @@ namespace CalendarAnalyser.Core.Configuration;
 
 public class CalendarAnalysisConfigurationBuilder 
 {
-    private readonly CalendarAnalysisConfiguration configuration = new()
+    internal readonly CalendarAnalysisConfiguration configuration = new()
     {
         CoreHoursStartTime = TimeSpan.FromHours(9),
         CoreHoursEndTime = TimeSpan.FromHours(15),
