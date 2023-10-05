@@ -10,6 +10,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Build
-      run: dotnet build --configuration Release
-    # - name: Test
-    #   run: dotnet test --configuration Release --no-build
+      run: dotnet build ./src/CalendarAnalyser.Core/Calendar.Analyser.Core.csproj --configuration Release
+    - name: Test
+      run: dotnet test ./src/CalendarAnalyser.Core.Tests/Calendar.Analyser.Core.Tests.csproj --configuration Release --no-build
