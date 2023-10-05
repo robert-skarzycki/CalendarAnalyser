@@ -41,6 +41,22 @@ public class CalendarAnalysisEngineTests
         result.TotalDurationPerCategory["Other"].TotalMinutes.Should().Be(0, "all meeting matches a rule");
         result.TotalDurationPerCategory["Dummy"].TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
     }
+
+    [Fact]
+    public void WhenMeetingStartsEarlierThenCoreHours_ShouldBeTrimmed()
+    {
+        var configuration = new CalendarAnalysisConfigurationBuilder()
+            .WithCoreHoursStartAt(TimeSpan.FromHours(8))
+            .Build();
+
+        var sut = new CalendarAnalysisEngine(configuration);
+
+        var result = sut.Analyze(new[] {
+            new DummyMeeting((7, 0), (9, 0))
+        });
+
+        result.TotalDurationPerCategory["Other"].TotalMinutes.Should().Be(60, "120 min meeting should be trimmed by 60 minnutes (only 8:00-9:00 counts)");
+    }
 }
 
 public record DummyMeeting((int, int) StartTime, (int, int)EndTime) : Meeting("Dummy", new DateTime(2023, 8, 1, StartTime.Item1, StartTime.Item2, 0), new DateTime(2023, 8, 1, EndTime.Item1, EndTime.Item2, 0), 1, "john.smith@company.com", false, false);
