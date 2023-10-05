@@ -21,6 +21,6 @@ jobs:
     - name: Build
       run: dotnet build src/CalendarAnalyser/CalendarAnalyser.Core/CalendarAnalyser.Core.csproj --configuration Release /p:Version=$VERSION
     - name: Test
-      run: dotnet test src/CalendarAnalyser --configuration Release --no-build
+      run: dotnet test src/CalendarAnalyser/CalendarAnalyser.Core.Tests/CalendarAnalyser.Core.Tests.csproj --configuration Release
     - name: pack nuget packages
       run: dotnet pack --output nupkgs --no-restore --no-build /p:PackageVersion=$VERSION
