@@ -15,18 +15,18 @@ public class CalendarAnalysisConfiguration
         get { return coreHoursStartTime; }
         set
         {
-            if (value < TimeSpan.Zero)
-            {
-                throw new ArgumentOutOfRangeException("Core hours start time cannot be lower than 0:00.");
-            }
-            if (value > new TimeSpan(23, 59, 59))
-            {
-                throw new ArgumentOutOfRangeException("Core hours star time cannot be greater than 23:59:59");
-            }
-            if (value > coreHoursEndTime)
-            {
-                throw new ArgumentOutOfRangeException($"Core hours start time cannot be greater than core hours end time which is {coreHoursEndTime}");
-            }
+            //if (value < TimeSpan.Zero)
+            //{
+            //    throw new ArgumentOutOfRangeException("Core hours start time cannot be lower than 0:00.");
+            //}
+            //if (value > new TimeSpan(23, 59, 59))
+            //{
+            //    throw new ArgumentOutOfRangeException("Core hours star time cannot be greater than 23:59:59");
+            //}
+            //if (value > coreHoursEndTime)
+            //{
+            //    throw new ArgumentOutOfRangeException($"Core hours start time cannot be greater than core hours end time which is {coreHoursEndTime}");
+            //}
 
             coreHoursStartTime = value;
         }
@@ -37,18 +37,18 @@ public class CalendarAnalysisConfiguration
         get { return coreHoursEndTime; }
         set
         {
-            if (value < TimeSpan.Zero)
-            {
-                throw new ArgumentOutOfRangeException("Core hours end time cannot be lower than 0:00.");
-            }
-            if (value > new TimeSpan(23, 59, 59))
-            {
-                throw new ArgumentOutOfRangeException("Core hours end time cannot be greater than 23:59:59");
-            }
-            if (value < coreHoursEndTime)
-            {
-                throw new ArgumentOutOfRangeException($"Core hours end time cannot be lower than core hours start time which is {coreHoursStartTime}");
-            }
+            //if (value < TimeSpan.Zero)
+            //{
+            //    throw new ArgumentOutOfRangeException("Core hours end time cannot be lower than 0:00.");
+            //}
+            //if (value > new TimeSpan(23, 59, 59))
+            //{
+            //    throw new ArgumentOutOfRangeException("Core hours end time cannot be greater than 23:59:59");
+            //}
+            //if (value < coreHoursEndTime)
+            //{
+            //    throw new ArgumentOutOfRangeException($"Core hours end time cannot be lower than core hours start time which is {coreHoursStartTime}");
+            //}
 
             coreHoursEndTime = value;
         }
