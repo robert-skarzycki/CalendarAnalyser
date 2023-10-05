@@ -17,10 +17,13 @@ jobs:
       env:
         SHA: ${{ github.sha }}
       run: echo "VERSION=$VERSION-dev-${SHA::7}" >> $GITHUB_ENV
-    - run: echo "Building for version $VERSION"
+    - name: Print version
+      run: echo "Building for version $VERSION"
     - name: Build
       run: dotnet build src/CalendarAnalyser/CalendarAnalyser.Core/CalendarAnalyser.Core.csproj --configuration Release /p:Version=$VERSION
     - name: Test
       run: dotnet test src/CalendarAnalyser/CalendarAnalyser.Core.Tests/CalendarAnalyser.Core.Tests.csproj --configuration Release
     - name: pack nuget packages
-      run: dotnet pack --output nupkgs --no-restore --no-build /p:PackageVersion=$VERSION
+      run: dotnet pack src/CalendarAnalyser --output nupkgs --no-restore --no-build /p:PackageVersion=$VERSION
+    - name: upload nuget package
+      run: dotnet nuget push nupkgs/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
