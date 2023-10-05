@@ -8,8 +8,8 @@ public class CalendarAnalysisConfiguration
     private TimeSpan coreHoursStartTime;
     private TimeSpan coreHoursEndTime;
 
-    public bool OnlyWorkingDays { get; set; };
-    public TimeSpan TimeResolution { get; set; };
+    public bool OnlyWorkingDays { get; set; }
+    public TimeSpan TimeResolution { get; set; }
     public TimeSpan CoreHoursStartTime
     {
         get { return coreHoursStartTime; }
