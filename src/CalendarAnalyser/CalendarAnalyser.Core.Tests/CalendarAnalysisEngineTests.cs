@@ -9,12 +9,10 @@ public class CalendarAnalysisEngineTests
     [Fact]
     public void WhenNoRulesMatching_ShouldFallbackToOtherCategory()
     {
-        var configuration = new CalendarAnalysisConfiguration()
-        {
-            CoreHoursStartTime = TimeSpan.FromHours(8),
-            CoreHoursEndTime = TimeSpan.FromHours(16),
-            Rules = new[] { new RegexAnalysisRule(new Regex("NotDummy"), "NotDummy")}
-        };
+        var configuration = new CalendarAnalysisConfigurationBuilder()
+            .WithRules(new[] { new RegexAnalysisRule(new Regex("NotDummy"), "NotDummy") })
+            .Build();
+        
         var sut = new CalendarAnalysisEngine(configuration);
 
         var result = sut.Analyze(new[] { 
@@ -29,12 +27,10 @@ public class CalendarAnalysisEngineTests
     [Fact]
     public void WhenRuleMatches_ShouldSumAllMatchingMeetings()
     {
-        var configuration = new CalendarAnalysisConfiguration()
-        {
-            CoreHoursStartTime = TimeSpan.FromHours(8),
-            CoreHoursEndTime = TimeSpan.FromHours(16),
-            Rules = new[] { new RegexAnalysisRule(new Regex("Dummy"), "Dummy") }
-        };
+        var configuration = new CalendarAnalysisConfigurationBuilder()
+            .WithRules(new[] { new RegexAnalysisRule(new Regex("Dummy"), "Dummy") })
+            .Build();
+
         var sut = new CalendarAnalysisEngine(configuration);
 
         var result = sut.Analyze(new[] {

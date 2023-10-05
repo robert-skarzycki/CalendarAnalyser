@@ -11,6 +11,7 @@ public class CalendarAnalysisConfigurationBuilder
         CoreHoursEndTime = TimeSpan.FromHours(15),
         OnlyWorkingDays = true,
         TimeResolution = TimeSpan.FromMinutes(30),
+        Rules = new List<IAnalysisRule>()
     };
 
     public CalendarAnalysisConfigurationBuilder WithTimeResolution(TimeSpan timeResolution)
