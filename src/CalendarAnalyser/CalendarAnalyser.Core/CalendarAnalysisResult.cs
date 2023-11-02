@@ -8,6 +8,8 @@ namespace CalendarAnalyser.Core;
 public class CalendarAnalysisResult
 {
     public CalendarCategoriesAnalysisResult CategoriesAnalysis { get; set; }
+
+    public IEnumerable<CalendarSlot> CalendarSlots { get; set; }
 }
 
 public class CalendarCategoriesAnalysisResult
@@ -31,4 +33,6 @@ public class CalendarCategoriesAnalysisResult
 }
 
 public record AnalyzedCategoryInfo(TimeSpan TotalDuration, double Percentage);
+
+public record CalendarSlot(DateTime SlotStartDateTime, string Category);
     

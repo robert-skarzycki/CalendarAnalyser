@@ -18,16 +18,51 @@ public class CalendarAnalysisEngine
     {
         if (meetings == null) { throw new ArgumentNullException(nameof(meetings)); }
 
-        var totalDurationPerCategory = AnalyzeInCategories(meetings);
+        var meetingsGrouped = GroupMeetingsByCategories(meetings);
+
+        var totalDurationPerCategory = CalculateTotalDurationPerCategory(meetingsGrouped);
 
         var totalWorkingTime = CalculateTotalWorkingTime();
 
+        var calendarSlots = BuildCalendarSlots(meetingsGrouped);
+
         var result = new CalendarAnalysisResult
         {
-            CategoriesAnalysis = new CalendarCategoriesAnalysisResult(totalDurationPerCategory, totalWorkingTime)
+            CategoriesAnalysis = new CalendarCategoriesAnalysisResult(totalDurationPerCategory, totalWorkingTime),
+            CalendarSlots = calendarSlots
         };
 
         return result;
+    }
+
+    private IEnumerable<CalendarSlot> BuildCalendarSlots(Dictionary<string, List<Meeting>> meetingGroups)
+    {
+        var currentDate = configuration.AnalysisStartDate.Date;
+
+        var coreHoursLength = configuration.CoreHoursEndTime - configuration.CoreHoursStartTime;
+        var slotsPerDay = Math.Ceiling(coreHoursLength.TotalMinutes / configuration.TimeResolution.TotalMinutes);
+
+        while(currentDate < configuration.AnalysisEndDate.Date)
+        {
+            if(!configuration.OnlyWorkingDays || !IsWeekend(currentDate))
+            {
+                for(var i=0;i< slotsPerDay; i++)
+                {
+                    var slotStartDate = currentDate.Add(configuration.CoreHoursStartTime).AddMinutes(i * configuration.TimeResolution.TotalMinutes);
+                    var slotEndDate = slotStartDate.Add(configuration.TimeResolution);
+
+                    var categories = meetingGroups.Where(pair => pair.Value.Any(meeting => meeting.StartDateTime < slotEndDate && meeting.EndDateTime > slotStartDate)).ToArray();
+
+                    if (categories.Any())
+                    {
+                        yield return new CalendarSlot(slotStartDate, string.Join("_", categories.Select(pair => pair.Key)));
+                    }
+                }
+                
+            }
+
+            currentDate = currentDate.AddDays(1);
+        }
     }
 
     private TimeSpan CalculateTotalWorkingTime()
@@ -43,7 +78,7 @@ public class CalendarAnalysisEngine
             var currentDate = configuration.AnalysisStartDate.Date;
             while (currentDate <= configuration.AnalysisEndDate)
             {
-                if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+                if (!IsWeekend(currentDate))
                 {
                     totalDays += 1.0;
                 }
@@ -54,20 +89,13 @@ public class CalendarAnalysisEngine
         return TimeSpan.FromMinutes(totalDays * (configuration.CoreHoursEndTime - configuration.CoreHoursStartTime).TotalMinutes);
     }
 
-    private Dictionary<string, TimeSpan> AnalyzeInCategories(IEnumerable<Meeting> meetings)
+    private Dictionary<string, List<Meeting>> GroupMeetingsByCategories(IEnumerable<Meeting> meetings)
     {
-        var categories = configuration.Rules.ToDictionary(r => r.Category, _ => TimeSpan.Zero);
-        categories.Add(Constants.OtherCategoryName, TimeSpan.Zero);
+        var result = configuration.Rules.ToDictionary(r => r.Category, _ => new List<Meeting>());
+        result.Add(Constants.OtherCategoryName, new List<Meeting>());
 
-        foreach(var meeting in meetings)
+        foreach (var meeting in meetings)
         {
-            var coreHoursStart = meeting.StartDateTime.Date.Add(configuration.CoreHoursStartTime);
-            var trimmedMeetingStartDateTime = meeting.StartDateTime < coreHoursStart ? coreHoursStart : meeting.StartDateTime;
-            var coreHoursEnd = meeting.StartDateTime.Date.Add(configuration.CoreHoursEndTime);
-            var trimmedMeetingEndDateTime = meeting.EndDateTime > coreHoursEnd ? coreHoursEnd : meeting.EndDateTime;
-
-            var meetingDuration = trimmedMeetingEndDateTime - trimmedMeetingStartDateTime;
-
             var matchingRules = configuration.Rules.Where(r => r.IsMatch(meeting)).ToArray();
 
             if (matchingRules.Length > 1)
@@ -78,10 +106,38 @@ public class CalendarAnalysisEngine
             {
                 var categoryName = matchingRules.Length == 0 ? Constants.OtherCategoryName : matchingRules.First().Category;
 
-                categories[categoryName] += meetingDuration;
+                result[categoryName].Add(meeting);
             }
         }
 
-        return categories;
+        return result;
     }
+
+    private Dictionary<string, TimeSpan> CalculateTotalDurationPerCategory(Dictionary<string, List<Meeting>> meetingGroups)
+    {
+        var result = new Dictionary<string, TimeSpan>();
+
+        foreach(var pair in meetingGroups)
+        {
+            var sumOfMeetingsDuration = TimeSpan.Zero;
+
+            foreach (var meeting in pair.Value)
+            {
+                var coreHoursStart = meeting.StartDateTime.Date.Add(configuration.CoreHoursStartTime);
+                var trimmedMeetingStartDateTime = meeting.StartDateTime < coreHoursStart ? coreHoursStart : meeting.StartDateTime;
+                var coreHoursEnd = meeting.StartDateTime.Date.Add(configuration.CoreHoursEndTime);
+                var trimmedMeetingEndDateTime = meeting.EndDateTime > coreHoursEnd ? coreHoursEnd : meeting.EndDateTime;
+
+                var meetingDuration = trimmedMeetingEndDateTime - trimmedMeetingStartDateTime;
+
+                sumOfMeetingsDuration += meetingDuration;
+            }
+
+            result.Add(pair.Key, sumOfMeetingsDuration);
+        }
+
+        return result;
+    }
+
+    private bool IsWeekend(DateTime date) => date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
 }
