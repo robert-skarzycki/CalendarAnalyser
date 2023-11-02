@@ -22,7 +22,10 @@ public class CalendarAnalysisEngine
 
         var totalWorkingTime = CalculateTotalWorkingTime();
 
-        var result = new CalendarAnalysisResult(totalDurationPerCategory, totalWorkingTime);
+        var result = new CalendarAnalysisResult
+        {
+            CategoriesAnalysis = new CalendarCategoriesAnalysisResult(totalDurationPerCategory, totalWorkingTime)
+        };
 
         return result;
     }

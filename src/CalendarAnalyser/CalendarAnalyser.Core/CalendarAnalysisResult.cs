@@ -7,11 +7,16 @@ namespace CalendarAnalyser.Core;
 
 public class CalendarAnalysisResult
 {
+    public CalendarCategoriesAnalysisResult CategoriesAnalysis { get; set; }
+}
+
+public class CalendarCategoriesAnalysisResult
+{
     public Dictionary<string, AnalyzedCategoryInfo> Categories { get; } = new Dictionary<string, AnalyzedCategoryInfo>();
 
-    public CalendarAnalysisResult(Dictionary<string, TimeSpan> totalDurationPerCategory, TimeSpan totalWorkingTime)
+    public CalendarCategoriesAnalysisResult(Dictionary<string, TimeSpan> totalDurationPerCategory, TimeSpan totalWorkingTime)
     {
-        foreach(var categoryPair in totalDurationPerCategory)
+        foreach (var categoryPair in totalDurationPerCategory)
         {
             var categoryName = categoryPair.Key;
             var totalTimeInCategory = categoryPair.Value;
