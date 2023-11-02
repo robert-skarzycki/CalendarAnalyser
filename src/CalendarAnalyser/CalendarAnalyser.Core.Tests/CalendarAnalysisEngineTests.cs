@@ -20,8 +20,8 @@ public class CalendarAnalysisEngineTests
             DummyMeeting((11, 0),(11, 30))
         });
 
-        result.Categories["NotDummy"].TotalDuration.TotalMinutes.Should().Be(0, "no meeting matches");
-        result.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
+        result.CategoriesAnalysis.Categories["NotDummy"].TotalDuration.TotalMinutes.Should().Be(0, "no meeting matches");
+        result.CategoriesAnalysis.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
     }
 
     [Fact]
@@ -38,8 +38,8 @@ public class CalendarAnalysisEngineTests
             DummyMeeting((11, 0), (11, 30))
         });
 
-        result.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(0, "all meeting matches a rule");
-        result.Categories["Dummy"].TotalDuration.TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
+        result.CategoriesAnalysis.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(0, "all meeting matches a rule");
+        result.CategoriesAnalysis.Categories["Dummy"].TotalDuration.TotalMinutes.Should().Be(60, "total sum of all meetings is 60 mins");
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class CalendarAnalysisEngineTests
             DummyMeeting((7, 0), (9, 0))
         });
 
-        result.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(60, "120 min meeting should be trimmed by 60 minnutes (only 8:00-9:00 counts)");
+        result.CategoriesAnalysis.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(60, "120 min meeting should be trimmed by 60 minnutes (only 8:00-9:00 counts)");
     }
 
     [Fact]
@@ -77,9 +77,9 @@ public class CalendarAnalysisEngineTests
             DummyMeeting(8, 4, (8, 0), (16, 0)),
         });
 
-        result.Categories[Constants.OtherCategoryName].Percentage.Should().Be(0.5, "1 week full in meetings, other not, weekend - excluded");
-        result.Categories[Constants.FreeCategoryName].Percentage.Should().Be(0.5, "1 week full in meetings, other not, weekend - excluded");
-        result.Categories[Constants.FreeCategoryName].TotalDuration.TotalHours.Should().Be(40, "second week free, weekend - excluded");
+        result.CategoriesAnalysis.Categories[Constants.OtherCategoryName].Percentage.Should().Be(0.5, "1 week full in meetings, other not, weekend - excluded");
+        result.CategoriesAnalysis.Categories[Constants.FreeCategoryName].Percentage.Should().Be(0.5, "1 week full in meetings, other not, weekend - excluded");
+        result.CategoriesAnalysis.Categories[Constants.FreeCategoryName].TotalDuration.TotalHours.Should().Be(40, "second week free, weekend - excluded");
     }
 
     private CalendarAnalysisConfigurationBuilder TestConfigurationBuilder()
