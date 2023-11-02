@@ -18,11 +18,11 @@ public class CalendarAnalysisEngine
     {
         if (meetings == null) { throw new ArgumentNullException(nameof(meetings)); }
 
+        var totalWorkingTime = CalculateTotalWorkingTime();
+
         var meetingsGrouped = GroupMeetingsByCategories(meetings);
 
         var totalDurationPerCategory = CalculateTotalDurationPerCategory(meetingsGrouped);
-
-        var totalWorkingTime = CalculateTotalWorkingTime();
 
         var calendarSlots = BuildCalendarSlots(meetingsGrouped);
 
