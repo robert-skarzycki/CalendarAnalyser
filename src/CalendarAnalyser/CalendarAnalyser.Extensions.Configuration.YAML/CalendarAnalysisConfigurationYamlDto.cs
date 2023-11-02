@@ -1,11 +1,27 @@
 ﻿namespace CalendarAnalyser.Extensions.Configuration.YAML;
 
-internal class CalendarAnalysisConfigurationYamlDto
+internal class AnalysisMappingDto
 {
-    public bool OnlyWorkingDays { get; set; } = true;
-    public TimeSpan TimeResolution { get; set; } = TimeSpan.FromMinutes(30);
-    public TimeSpan CoreHoursStartTime { get; set; } = TimeSpan.FromHours(9);
-    public TimeSpan CoreHoursEndTime { get; set; } = TimeSpan.FromHours(15);
-    public DateTime AnalysisStartDate { get; set; }
-    public DateTime AnalysisEndDate { get; set; }
+    public AnalysisCategory[] Categories { get; set; }
+}
+
+internal class AnalysisCategory
+{
+    public string Name { get; set; }
+    public AnalysisRuleDto[] Rules { get; set; }
+}
+
+internal abstract class AnalysisRuleDto
+{
+    public string Type { get; set; }    
+}
+
+internal class RegexAnalysisRuleDto : AnalysisRuleDto
+{
+    public string Pattern { get; set; }
+}
+
+internal static class RuleTypes
+{
+    internal static readonly string Regex = "regex";
 }

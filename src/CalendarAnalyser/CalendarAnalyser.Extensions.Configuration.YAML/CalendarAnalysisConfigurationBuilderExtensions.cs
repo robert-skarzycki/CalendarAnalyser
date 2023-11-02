@@ -1,4 +1,6 @@
-﻿using CalendarAnalyser.Core.Configuration;
+﻿using CalendarAnalyser.Core;
+using CalendarAnalyser.Core.Configuration;
+using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 
 namespace CalendarAnalyser.Extensions.Configuration.YAML;
@@ -13,21 +15,38 @@ public static class CalendarAnalysisConfigurationBuilderExtensions
         }
         var fileContent = File.ReadAllText(filePath);
 
-        var deserializer = new DeserializerBuilder().Build();
+        var deserializer = new DeserializerBuilder()
+            .WithTypeDiscriminatingNodeDeserializer(o =>
+            {
+                var valueMappings = new Dictionary<string, Type> 
+                {
+                    { RuleTypes.Regex, typeof(RegexAnalysisRuleDto) }
+                };
+                o.AddKeyValueTypeDiscriminator<AnalysisRuleDto>(nameof(AnalysisRuleDto.Type), valueMappings);
+            })
+            .Build();
 
-        var dto = deserializer.Deserialize<CalendarAnalysisConfigurationYamlDto>(fileContent);
+        var dto = deserializer.Deserialize<AnalysisMappingDto>(fileContent);
 
-        builder = builder
-            .WithTimeResolution(dto.TimeResolution)
-            .WithAnalysisDateRange(dto.AnalysisStartDate, dto.AnalysisEndDate)
-            .WithCoreHoursStartAt(dto.CoreHoursStartTime)
-            .WithCoreHoursEndAt(dto.CoreHoursEndTime);            
+        var rules = MaptDtoToRules(dto);
 
-        if (dto.OnlyWorkingDays)
+        return builder.WithRules(rules.ToList());
+    }
+
+    private static IEnumerable<IAnalysisRule> MaptDtoToRules(AnalysisMappingDto dto)
+    {
+        foreach(var category in dto.Categories)
         {
-            builder = builder.WithOnlyWorkingDays();
-        }
+            foreach(var rule in category.Rules)
+            {
+                var analysisRule = rule switch
+                {
+                    RegexAnalysisRuleDto regexRule => new RegexAnalysisRule(new Regex(regexRule.Pattern), category.Name),
+                    _ => throw new IndexOutOfRangeException("Invalid rule type")
+                };
 
-        return builder;
+                yield return analysisRule;
+            }
+        }
     }
 }
