@@ -1,4 +1,5 @@
 ﻿using CalendarAnalyser.Core.Configuration;
+using YamlDotNet.Serialization;
 
 namespace CalendarAnalyser.Extensions.Configuration.YAML;
 
@@ -12,8 +13,20 @@ public static class CalendarAnalysisConfigurationBuilderExtensions
         }
         var fileContent = File.ReadAllText(filePath);
 
-        // TOOD: deserialize YAML with YAML dtos
-        // map DTOs to actual rules
+        var deserializer = new DeserializerBuilder().Build();
+
+        var dto = deserializer.Deserialize<CalendarAnalysisConfigurationYamlDto>(fileContent);
+
+        builder = builder
+            .WithTimeResolution(dto.TimeResolution)
+            .WithAnalysisDateRange(dto.AnalysisStartDate, dto.AnalysisEndDate)
+            .WithCoreHoursStartAt(dto.CoreHoursStartTime)
+            .WithCoreHoursEndAt(dto.CoreHoursEndTime);            
+
+        if (dto.OnlyWorkingDays)
+        {
+            builder = builder.WithOnlyWorkingDays();
+        }
 
         return builder;
     }
