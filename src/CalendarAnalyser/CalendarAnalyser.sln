@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarAnalyser.Extensions
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{8BFEDB1B-4578-4C72-82BD-A9542EB7CF85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarAnalyser.Extensions.Configuration.YAML.Tests", "CalendarAnalyser.Extensions.Configuration.YAML.Tests\CalendarAnalyser.Extensions.Configuration.YAML.Tests.csproj", "{A2839694-DFEB-4834-B8FD-E634689DBE6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarAnalyser.Extensions.Configuration.YAML.Tests", "CalendarAnalyser.Extensions.Configuration.YAML.Tests\CalendarAnalyser.Extensions.Configuration.YAML.Tests.csproj", "{A2839694-DFEB-4834-B8FD-E634689DBE6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarAnalyser.Extensions.Export.Excel", "CalendarAnalyser.Extensions.Export.Excel\CalendarAnalyser.Extensions.Export.Excel.csproj", "{83BB62CD-9FF8-4203-A859-DFECB935C2FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{A2839694-DFEB-4834-B8FD-E634689DBE6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2839694-DFEB-4834-B8FD-E634689DBE6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2839694-DFEB-4834-B8FD-E634689DBE6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83BB62CD-9FF8-4203-A859-DFECB935C2FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83BB62CD-9FF8-4203-A859-DFECB935C2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83BB62CD-9FF8-4203-A859-DFECB935C2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83BB62CD-9FF8-4203-A859-DFECB935C2FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1DDC9327-C834-429C-85CB-D9697195E596} = {8BFEDB1B-4578-4C72-82BD-A9542EB7CF85}
 		{A2839694-DFEB-4834-B8FD-E634689DBE6C} = {8BFEDB1B-4578-4C72-82BD-A9542EB7CF85}
+		{83BB62CD-9FF8-4203-A859-DFECB935C2FA} = {8BFEDB1B-4578-4C72-82BD-A9542EB7CF85}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF0978F3-93DD-4706-9415-38F1DDC16846}
