@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SpreadCheetah" Version="1.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CalendarAnalyser.Core\CalendarAnalyser.Core.csproj" />
   </ItemGroup>
 
