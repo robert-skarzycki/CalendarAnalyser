@@ -57,6 +57,10 @@ public class CalendarAnalysisEngine
                     {
                         yield return new CalendarSlot(slotStartDate, string.Join("_", categories.Select(pair => pair.Key)));
                     }
+                    else
+                    {
+                        yield return new CalendarSlot(slotStartDate, Constants.FreeCategoryName);
+                    }
                 }
                 
             }
