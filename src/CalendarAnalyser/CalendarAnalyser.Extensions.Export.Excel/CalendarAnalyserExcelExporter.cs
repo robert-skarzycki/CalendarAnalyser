@@ -1,5 +1,7 @@
 ﻿using CalendarAnalyser.Core;
 using SpreadCheetah;
+using SpreadCheetah.Styling;
+using SpreadCheetah.Worksheets;
 
 namespace CalendarAnalyser.Extensions.Export.Excel
 {
@@ -21,16 +23,32 @@ namespace CalendarAnalyser.Extensions.Export.Excel
         {
             var groupedSlots = result.CalendarSlots.GroupBy(s => s.SlotStartDateTime.Date);
 
-            foreach(var day in groupedSlots) 
-            {
-                await spreadsheet.StartWorksheetAsync(day.Key.ToString("ddd yyyy-MM-dd"));
+            var worksheetOptions = new WorksheetOptions();
+            worksheetOptions.Column(1).Width = 25;
+            worksheetOptions.Column(2).Width = 25;
 
-                foreach(var slot in day)
+            var headerStyle = new Style();
+            headerStyle.Font.Bold = true;
+            var headerStyleId = spreadsheet.AddStyle(headerStyle);
+
+            foreach (var day in groupedSlots) 
+            {
+                await spreadsheet.StartWorksheetAsync(day.Key.ToString("ddd yyyy-MM-dd"), worksheetOptions);
+
+
+                var headerRow = new List<Cell>
+                {
+                    new("Time", headerStyleId),
+                    new("Category", headerStyleId)
+                };
+                await spreadsheet.AddRowAsync(headerRow);
+
+                foreach (var slot in day)
                 {
                     var row = new List<Cell>
                     {
-                        new Cell(slot.SlotStartDateTime.ToString()),
-                        new Cell(slot.Category)
+                        new(slot.SlotStartDateTime.TimeOfDay.ToString()),
+                        new(string.Equals(slot.Category, Constants.FreeCategoryName) ? string.Empty : slot.Category)
                     };
 
                     await spreadsheet.AddRowAsync(row);
@@ -40,13 +58,22 @@ namespace CalendarAnalyser.Extensions.Export.Excel
 
         private static async Task BuildCategoryStatsWorksheeet(Spreadsheet spreadsheet, CalendarAnalysisResult result)
         {
-            await spreadsheet.StartWorksheetAsync("Category stats");
+            var worksheetOptions = new WorksheetOptions();
+            worksheetOptions.Column(1).Width = 25;
+            worksheetOptions.Column(2).Width = 25;
+            worksheetOptions.Column(3).Width = 25;
+
+            await spreadsheet.StartWorksheetAsync("Category stats", worksheetOptions);
+
+            var headerStyle = new Style();
+            headerStyle.Font.Bold = true;
+            var headerStyleId = spreadsheet.AddStyle(headerStyle);
 
             var headerRow = new List<Cell>
             {
-                new Cell("Category name"),
-                new Cell("Percentage"),
-                new Cell("Total duration")
+                new("Category name", headerStyleId),
+                new("Percentage", headerStyleId),
+                new("Total duration", headerStyleId)
             };
 
             await spreadsheet.AddRowAsync(headerRow);
@@ -55,9 +82,9 @@ namespace CalendarAnalyser.Extensions.Export.Excel
             {
                 var row = new List<Cell>
                 {
-                    new Cell(category.Key),
-                    new Cell(category.Value.Percentage),
-                    new Cell(category.Value.TotalDuration.ToString())
+                    new(category.Key),
+                    new(category.Value.Percentage),
+                    new(category.Value.TotalDuration.ToString())
                 };
 
                 await spreadsheet.AddRowAsync(row);
