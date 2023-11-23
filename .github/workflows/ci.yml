@@ -3,27 +3,8 @@ on:
     branches:
     - dev
 
-env:
-  VERSION: 1.0.0
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Set Version variable
-      env:
-        SHA: ${{ github.sha }}
-      run: echo "VERSION=$VERSION-dev-${SHA::7}" >> $GITHUB_ENV
-    - name: Print version
-      run: echo "Building for version $VERSION"
-    - name: Build
-      run: dotnet build src/CalendarAnalyser --configuration Release /p:Version=$VERSION
-    - name: Test
-      run: dotnet test src/CalendarAnalyser/CalendarAnalyser.sln --configuration Release --no-build
-    - name: pack nuget packages
-      run: dotnet pack src/CalendarAnalyser --output nupkgs --configuration Release --no-restore --no-build /p:PackageVersion=$VERSION
-    - name: upload nuget package
-      run: dotnet nuget push nupkgs/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+  build_job:
+    uses: ./.github/workflofs/build-and-push.yml
+    with:
+      BUILD_TYPE: "DEV"
