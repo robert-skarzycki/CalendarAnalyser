@@ -22,7 +22,7 @@ jobs:
         if [[ "${{ inputs.BUILD_TYPE }}" == "DEV" ]]; then
           echo "VERSION=$BASIC_VERSION-dev-${SHA::7}" >> $GITHUB_ENV
         else
-          echo "TEMP - production!!!"
+          echo "VERSION=$BASIC_VERSION" >> $GITHUB_ENV
         fi
     - name: Print version
       run: echo "Building for version $VERSION"
