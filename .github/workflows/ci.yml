@@ -5,6 +5,6 @@ on:
 
 jobs:
   build_job:
-    uses: ./.github/workflofs/build-and-push.yml
+    uses: ./.github/workflows/build-and-push.yml
     with:
       BUILD_TYPE: "DEV"
