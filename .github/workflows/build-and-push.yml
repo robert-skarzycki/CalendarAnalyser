@@ -19,7 +19,7 @@ jobs:
       env:
         SHA: ${{ github.sha }}
       run: |
-        if [[ "${BUILD_TYPE}" == "DEV" ]]; then
+        if [[ "${{ inputs.BUILD_TYPE }}" == "DEV" ]]; then
           echo "VERSION=$BASIC_VERSION-dev-${SHA::7}" >> $GITHUB_ENV
         else
           echo "TEMP - production!!!"
