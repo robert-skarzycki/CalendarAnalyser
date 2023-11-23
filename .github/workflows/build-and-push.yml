@@ -4,6 +4,9 @@ on:
       BUILD_TYPE:
         required: true
         type: string
+    secrets:
+      NUGET_API_KEY:
+        required: true
 
 env:
   BASIC_VERSION: 1.0.0

@@ -8,3 +8,5 @@ jobs:
     uses: ./.github/workflows/build-and-push.yml
     with:
       BUILD_TYPE: "DEV"
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
