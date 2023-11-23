@@ -1,0 +1,10 @@
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build_job:
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      BUILD_TYPE: "RELEASE"
