@@ -10,7 +10,7 @@ public class RegexAnalysisRuleTests
     {
         var sut = new RegexAnalysisRule(new Regex("Dum.*"), "some-category");
 
-        var meeting = DummyMeeting("Dummy");
+        var meeting = new DummyMeeting("Dummy");
 
         var result = sut.IsMatch(meeting);
 
@@ -22,12 +22,10 @@ public class RegexAnalysisRuleTests
     {
         var sut = new RegexAnalysisRule(new Regex("Dum.*"), "some-category");
 
-        var meeting = DummyMeeting("NotDummy");
+        var meeting = new DummyMeeting("NotDummy");
 
         var result = sut.IsMatch(meeting);
 
         result.Should().BeTrue();
     }
-
-    private Meeting DummyMeeting(string name) => new(name, new DateTime(2023, 8, 1, 9,0, 0), new DateTime(2023, 8, 1, 9, 30, 0), 1, "john.smith@company.com", false, false);
 }
