@@ -27,4 +27,10 @@
     <ProjectReference Include="..\CalendarAnalyser.Extensions.Configuration.YAML\CalendarAnalyser.Extensions.Configuration.YAML.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="test-rules.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
