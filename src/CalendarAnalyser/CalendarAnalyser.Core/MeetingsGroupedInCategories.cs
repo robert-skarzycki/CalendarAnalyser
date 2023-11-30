@@ -16,6 +16,8 @@ public class MeetingsGroupedInCategories
 
         foreach (var meeting in meetings)
         {
+            if(configuration.FilterOutAllDayEvents && meeting.IsAllDay) { continue; }
+
             var matchingRules = configuration.Rules.Where(r => r.IsMatch(meeting)).ToArray();
             var matchingCategories = matchingRules.Select(r => r.Category).Distinct().ToArray();
 
