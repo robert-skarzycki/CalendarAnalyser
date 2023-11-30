@@ -17,17 +17,16 @@ public class MeetingsGroupedInCategories
         foreach (var meeting in meetings)
         {
             var matchingRules = configuration.Rules.Where(r => r.IsMatch(meeting)).ToArray();
+            var matchingCategories = matchingRules.Select(r => r.Category).Distinct().ToArray();
 
-            if (matchingRules.Length > 1)
+            if (matchingCategories.Length > 1)
             {
-                throw new InvalidOperationException("More than one rules apply");
-            }
-            else
-            {
-                var categoryName = matchingRules.Length == 0 ? Constants.OtherCategoryName : matchingRules.First().Category;
+                configuration.LogAction($"More than one rules apply: ${string.Join(", ", matchingCategories)} for \"${meeting.Subject}\" on ${meeting.StartDateTime:o}");
+            }            
+            
+            var categoryName = matchingCategories.Length == 0 ? Constants.OtherCategoryName : matchingCategories.First(); // TODO: Handle multiple categories matching
 
-                result[categoryName].Add(meeting);
-            }
+            result[categoryName].Add(meeting);            
         }
 
         Data = result;
