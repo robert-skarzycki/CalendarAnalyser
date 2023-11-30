@@ -12,7 +12,8 @@ public class CalendarAnalysisConfigurationBuilder
         OnlyWorkingDays = true,
         TimeResolution = TimeSpan.FromMinutes(30),
         Rules = new List<IAnalysisRule>(),
-        LogAction = _ => { }
+        LogAction = _ => { },
+        FilterOutAllDayEvents = false
     };
 
     public CalendarAnalysisConfigurationBuilder WithTimeResolution(TimeSpan timeResolution)
@@ -60,6 +61,13 @@ public class CalendarAnalysisConfigurationBuilder
     {
         configuration.LogAction = logAction; 
         
+        return this;
+    }
+
+    public CalendarAnalysisConfigurationBuilder WithoutAllDayEvents()
+    {
+        configuration.FilterOutAllDayEvents = true;
+
         return this;
     }
 

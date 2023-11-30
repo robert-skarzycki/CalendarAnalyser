@@ -60,5 +60,5 @@ public class CalendarAnalysisConfiguration
     public DateTime AnalysisEndDate { get; set; }
 
     public Action<string> LogAction { get; set; }
-
+    public bool FilterOutAllDayEvents { get; set; }
 }
