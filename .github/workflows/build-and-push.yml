@@ -20,10 +20,10 @@ jobs:
       uses: actions/checkout@v4
     - name: Set Version variable
       env:
-        SHA: ${{ github.sha }}
+        BUILD_NUMBER: ${{github.run_number}}
       run: |
         if [[ "${{ inputs.BUILD_TYPE }}" == "DEV" ]]; then
-          echo "VERSION=$BASIC_VERSION-dev-${SHA::7}" >> $GITHUB_ENV
+          echo "VERSION=$BASIC_VERSION-dev-$BUILD_NUMBER" >> $GITHUB_ENV
         else
           echo "VERSION=$BASIC_VERSION" >> $GITHUB_ENV
         fi
