@@ -11,7 +11,7 @@ public class MeetingsGroupedInCategories
 
     public MeetingsGroupedInCategories(ICollection<Meeting> meetings, CalendarAnalysisConfiguration configuration)
     {
-        var result = configuration.Rules.ToDictionary(r => r.Category, _ => new List<Meeting>());
+        var result = configuration.Rules.Select(r => r.Category).Distinct().ToDictionary(category => category, _ => new List<Meeting>());
         result.Add(Constants.OtherCategoryName, new List<Meeting>());
 
         foreach (var meeting in meetings)
