@@ -59,4 +59,6 @@ public class CalendarAnalysisConfiguration
     public DateTime AnalysisStartDate { get; set; }
     public DateTime AnalysisEndDate { get; set; }
 
+    public Action<string> LogAction { get; set; }
+
 }

@@ -11,7 +11,8 @@ public class CalendarAnalysisConfigurationBuilder
         CoreHoursEndTime = TimeSpan.FromHours(15),
         OnlyWorkingDays = true,
         TimeResolution = TimeSpan.FromMinutes(30),
-        Rules = new List<IAnalysisRule>()
+        Rules = new List<IAnalysisRule>(),
+        LogAction = _ => { }
     };
 
     public CalendarAnalysisConfigurationBuilder WithTimeResolution(TimeSpan timeResolution)
@@ -52,6 +53,13 @@ public class CalendarAnalysisConfigurationBuilder
         configuration.AnalysisStartDate = analysisStartDate;
         configuration.AnalysisEndDate = analysisEndDate;
 
+        return this;
+    }
+
+    public CalendarAnalysisConfigurationBuilder WithLogAction(Action<string> logAction)
+    {
+        configuration.LogAction = logAction; 
+        
         return this;
     }
 
