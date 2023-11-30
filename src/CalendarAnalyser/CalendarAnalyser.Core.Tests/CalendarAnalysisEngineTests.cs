@@ -59,6 +59,22 @@ public class CalendarAnalysisEngineTests
     }
 
     [Fact]
+    public void WhenMeetingFullyOutsideCoreHours_ShouldNotBeCounted()
+    {
+        var configuration = TestConfigurationBuilder()
+            .WithCoreHoursStartAt(TimeSpan.FromHours(8))
+            .Build();
+
+        var sut = new CalendarAnalysisEngine(configuration);
+
+        var result = sut.Analyze(new[] {
+            DummyMeeting((7, 0), (7, 30))
+        });
+
+        result.CategoriesAnalysis.Categories[Constants.OtherCategoryName].TotalDuration.TotalMinutes.Should().Be(0, "Meeeting at 7:00-8:00 should not counted - core hours start is at 8:00");
+    }
+
+    [Fact]
     public void WhenOnlyWorkingDays_WeekendShouldNotBeCountedInFreeTime()
     {
         var configuration = TestConfigurationBuilder()

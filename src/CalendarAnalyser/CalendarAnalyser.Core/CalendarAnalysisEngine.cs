@@ -109,6 +109,11 @@ public class CalendarAnalysisEngine
                 var trimmedMeetingEndDateTime = meeting.EndDateTime > coreHoursEnd ? coreHoursEnd : meeting.EndDateTime;
 
                 var meetingDuration = trimmedMeetingEndDateTime - trimmedMeetingStartDateTime;
+                
+                if(meetingDuration < TimeSpan.Zero)
+                {
+                    continue;
+                }
 
                 sumOfMeetingsDuration += meetingDuration;
             }
