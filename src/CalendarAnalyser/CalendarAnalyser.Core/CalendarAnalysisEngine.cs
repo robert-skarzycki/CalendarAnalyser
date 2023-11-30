@@ -20,11 +20,11 @@ public class CalendarAnalysisEngine
 
         var totalWorkingTime = CalculateTotalWorkingTime();
 
-        var meetingsGrouped = GroupMeetingsByCategories(meetings);
+        var meetingsGrouped = new MeetingsGroupedInCategories(meetings, configuration);
 
-        var totalDurationPerCategory = CalculateTotalDurationPerCategory(meetingsGrouped);
+        var totalDurationPerCategory = CalculateTotalDurationPerCategory(meetingsGrouped.Data);
 
-        var calendarSlots = BuildCalendarSlots(meetingsGrouped);
+        var calendarSlots = BuildCalendarSlots(meetingsGrouped.Data);
 
         var result = new CalendarAnalysisResult
         {
@@ -35,7 +35,7 @@ public class CalendarAnalysisEngine
         return result;
     }
 
-    private IEnumerable<CalendarSlot> BuildCalendarSlots(Dictionary<string, List<Meeting>> meetingGroups)
+    private IEnumerable<CalendarSlot> BuildCalendarSlots(IDictionary<string, List<Meeting>> meetingGroups)
     {
         var currentDate = configuration.AnalysisStartDate.Date;
 
@@ -93,31 +93,7 @@ public class CalendarAnalysisEngine
         return TimeSpan.FromMinutes(totalDays * (configuration.CoreHoursEndTime - configuration.CoreHoursStartTime).TotalMinutes);
     }
 
-    private Dictionary<string, List<Meeting>> GroupMeetingsByCategories(IEnumerable<Meeting> meetings)
-    {
-        var result = configuration.Rules.ToDictionary(r => r.Category, _ => new List<Meeting>());
-        result.Add(Constants.OtherCategoryName, new List<Meeting>());
-
-        foreach (var meeting in meetings)
-        {
-            var matchingRules = configuration.Rules.Where(r => r.IsMatch(meeting)).ToArray();
-
-            if (matchingRules.Length > 1)
-            {
-                throw new InvalidOperationException("More than one rules apply");
-            }
-            else
-            {
-                var categoryName = matchingRules.Length == 0 ? Constants.OtherCategoryName : matchingRules.First().Category;
-
-                result[categoryName].Add(meeting);
-            }
-        }
-
-        return result;
-    }
-
-    private Dictionary<string, TimeSpan> CalculateTotalDurationPerCategory(Dictionary<string, List<Meeting>> meetingGroups)
+    private Dictionary<string, TimeSpan> CalculateTotalDurationPerCategory(IDictionary<string, List<Meeting>> meetingGroups)
     {
         var result = new Dictionary<string, TimeSpan>();
 
