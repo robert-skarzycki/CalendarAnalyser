@@ -15,8 +15,10 @@ public class CalendarCategoriesAnalysisResult: ICalendarCategoriesAnalysisResult
 {
     public Dictionary<string, AnalyzedCategoryInfo> Categories { get; } = new Dictionary<string, AnalyzedCategoryInfo>();
 
-    public CalendarCategoriesAnalysisResult(Dictionary<string, TimeSpan> totalDurationPerCategory, TimeSpan totalWorkingTime)
+    public CalendarCategoriesAnalysisResult(Dictionary<string, TimeSpan> totalDurationPerCategory)
     {
+        var totalWorkingTime = TimeSpan.FromTicks(totalDurationPerCategory.Sum(c => c.Value.Ticks));
+
         foreach (var categoryPair in totalDurationPerCategory)
         {
             var categoryName = categoryPair.Key;
@@ -24,10 +26,6 @@ public class CalendarCategoriesAnalysisResult: ICalendarCategoriesAnalysisResult
 
             Categories[categoryName] = new AnalyzedCategoryInfo(totalTimeInCategory, totalTimeInCategory.TotalMinutes / totalWorkingTime.TotalMinutes);
         }
-
-        var totalFreeTime = totalWorkingTime.TotalMinutes - Categories.Sum(c => c.Value.TotalDuration.TotalMinutes);
-
-        Categories[Constants.FreeCategoryName] = new AnalyzedCategoryInfo(TimeSpan.FromMinutes(totalFreeTime), 1 - Categories.Sum(c => c.Value.Percentage));
     }
 }
 
