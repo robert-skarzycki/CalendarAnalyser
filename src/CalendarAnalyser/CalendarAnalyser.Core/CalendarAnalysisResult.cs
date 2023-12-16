@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalendarAnalyser.Core.Results;
 
 namespace CalendarAnalyser.Core;
 
-public class CalendarAnalysisResult: ICalendarAnalysisResult
-{
-    public ICalendarCategoriesAnalysisResult CategoriesAnalysis { get; set; }
+internal record CalendarAnalysisResult(ICalendarCategoriesAnalysisResult CategoriesAnalysis, Dictionary<DateOnly, IEnumerable<ICalendarResultSlot>> CalendarSlotsPerWorkingDay) : ICalendarAnalysisResult;
 
-    public IEnumerable<ICalendarResultSlot> CalendarSlots { get; set; }
-}
-
-public class CalendarCategoriesAnalysisResult: ICalendarCategoriesAnalysisResult
+internal class CalendarCategoriesAnalysisResult: ICalendarCategoriesAnalysisResult
 {
     public Dictionary<string, AnalyzedCategoryInfo> Categories { get; } = new Dictionary<string, AnalyzedCategoryInfo>();
 
@@ -30,23 +26,4 @@ public class CalendarCategoriesAnalysisResult: ICalendarCategoriesAnalysisResult
 }
 
 public record AnalyzedCategoryInfo(TimeSpan TotalDuration, double Percentage);
-
-
-public interface ICalendarAnalysisResult
-{
-    public ICalendarCategoriesAnalysisResult CategoriesAnalysis { get; set; }
-
-    public IEnumerable<ICalendarResultSlot> CalendarSlots { get; set; }
-}
-
-public interface ICalendarCategoriesAnalysisResult
-{
-    Dictionary<string, AnalyzedCategoryInfo> Categories { get; }
-}
-
-public interface ICalendarResultSlot
-{
-    DateTime SlotStartDateTime { get; }
-    string Category { get; }
-}
-internal record CalendarResultSlot(DateTime SlotStartDateTime, string Category): ICalendarResultSlot;
+internal record CalendarResultSlot(TimeOnly SlotStartDateTime, string Category): ICalendarResultSlot;

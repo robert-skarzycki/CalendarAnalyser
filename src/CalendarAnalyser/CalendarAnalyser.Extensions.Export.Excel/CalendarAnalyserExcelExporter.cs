@@ -1,4 +1,5 @@
 ﻿using CalendarAnalyser.Core;
+using CalendarAnalyser.Core.Results;
 using SpreadCheetah;
 using SpreadCheetah.Styling;
 using SpreadCheetah.Worksheets;
@@ -7,7 +8,7 @@ namespace CalendarAnalyser.Extensions.Export.Excel
 {
     public static class CalendarAnalyserExcelExporter
     {
-        public static async Task Export(string filePath, CalendarAnalysisResult result)
+        public static async Task Export(string filePath, ICalendarAnalysisResult result)
         {
             using var stream = File.Create(filePath);
             using var spreadsheet = await Spreadsheet.CreateNewAsync(stream);
@@ -19,10 +20,8 @@ namespace CalendarAnalyser.Extensions.Export.Excel
             await spreadsheet.FinishAsync();
         }
 
-        private static async Task BuildSlotsWorksheet(Spreadsheet spreadsheet, CalendarAnalysisResult result)
+        private static async Task BuildSlotsWorksheet(Spreadsheet spreadsheet, ICalendarAnalysisResult result)
         {
-            var groupedSlots = result.CalendarSlots.GroupBy(s => s.SlotStartDateTime.Date);
-
             var worksheetOptions = new WorksheetOptions();
             worksheetOptions.Column(1).Width = 25;
             worksheetOptions.Column(2).Width = 25;
@@ -31,7 +30,7 @@ namespace CalendarAnalyser.Extensions.Export.Excel
             headerStyle.Font.Bold = true;
             var headerStyleId = spreadsheet.AddStyle(headerStyle);
 
-            foreach (var day in groupedSlots) 
+            foreach (var day in result.CalendarSlotsPerWorkingDay) 
             {
                 await spreadsheet.StartWorksheetAsync(day.Key.ToString("ddd yyyy-MM-dd"), worksheetOptions);
 
@@ -43,11 +42,11 @@ namespace CalendarAnalyser.Extensions.Export.Excel
                 };
                 await spreadsheet.AddRowAsync(headerRow);
 
-                foreach (var slot in day)
+                foreach (var slot in day.Value)
                 {
                     var row = new List<Cell>
                     {
-                        new(slot.SlotStartDateTime.TimeOfDay.ToString()),
+                        new(slot.SlotStartDateTime.ToString("HH:mm")),
                         new(string.Equals(slot.Category, Constants.FreeCategoryName) ? string.Empty : slot.Category)
                     };
 
@@ -56,7 +55,7 @@ namespace CalendarAnalyser.Extensions.Export.Excel
             }
         }
 
-        private static async Task BuildCategoryStatsWorksheeet(Spreadsheet spreadsheet, CalendarAnalysisResult result)
+        private static async Task BuildCategoryStatsWorksheeet(Spreadsheet spreadsheet, ICalendarAnalysisResult result)
         {
             var worksheetOptions = new WorksheetOptions();
             worksheetOptions.Column(1).Width = 25;

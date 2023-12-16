@@ -1,4 +1,5 @@
 ﻿using CalendarAnalyser.Core.Configuration;
+using CalendarAnalyser.Core.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ public class CalendarAnalysisEngine
         this.configuration = configuration;
     }
 
-    public CalendarAnalysisResult Analyze(ICollection<Meeting> meetings)
+    public ICalendarAnalysisResult Analyze(ICollection<Meeting> meetings)
     {
         if (meetings == null) { throw new ArgumentNullException(nameof(meetings)); }
 
@@ -26,11 +27,10 @@ public class CalendarAnalysisEngine
 
         var totalDurationPerCategory = CalculateTotalDurationPerCategory(workingDays);
 
-        var result = new CalendarAnalysisResult
-        {
-            CategoriesAnalysis = new CalendarCategoriesAnalysisResult(totalDurationPerCategory),
-            CalendarSlots = workingDays.SelectMany(wd => wd.Slots.Select(s => new CalendarResultSlot(wd.Date.ToDateTime(s.StartTime), string.Join(";", s.Categories))))
-        };
+        var categoriesAnalysisResult = new CalendarCategoriesAnalysisResult(totalDurationPerCategory);
+        var resultsSlotsPerWorkingDay = workingDays.ToDictionary(wd => wd.Date, wd => wd.Slots.Select(s => new CalendarResultSlot(s.StartTime, string.Join(";", s.Categories)) as ICalendarResultSlot));
+
+        var result = new CalendarAnalysisResult(categoriesAnalysisResult, resultsSlotsPerWorkingDay);
 
         return result;
     }
