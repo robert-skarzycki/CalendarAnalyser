@@ -8,8 +8,7 @@ internal class WorkingDay(DateOnly date, TimeSpan slotResolution, TimeSpan coreH
 {
     public DateOnly Date { get; } = date;
     public ICollection<CalendarSlot> Slots { get; } = BuildSlots(slotResolution, coreHoursStart, coreHoursEnd);
-    public TimeSpan WorkingTime => Slots.Count * slotResolution;
-
+    
     private static ICollection<CalendarSlot> BuildSlots(TimeSpan timeResolution, TimeSpan coreHoursStartTime, TimeSpan coreHoursEndTime)
     {
         var coreHoursLength = coreHoursEndTime - coreHoursStartTime;
