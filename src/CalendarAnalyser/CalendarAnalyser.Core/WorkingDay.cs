@@ -7,8 +7,8 @@ namespace CalendarAnalyser.Core;
 internal class WorkingDay(DateOnly date, TimeSpan slotResolution, TimeSpan coreHoursStart, TimeSpan coreHoursEnd)
 {
     public DateOnly Date { get; } = date;
-    private readonly ICollection<CalendarSlot> slots = BuildSlots(slotResolution, coreHoursStart, coreHoursEnd);
-    public TimeSpan WorkingTime => slots.Count * slotResolution;
+    public ICollection<CalendarSlot> Slots { get; } = BuildSlots(slotResolution, coreHoursStart, coreHoursEnd);
+    public TimeSpan WorkingTime => Slots.Count * slotResolution;
 
     private static ICollection<CalendarSlot> BuildSlots(TimeSpan timeResolution, TimeSpan coreHoursStartTime, TimeSpan coreHoursEndTime)
     {
@@ -30,7 +30,7 @@ internal class WorkingDay(DateOnly date, TimeSpan slotResolution, TimeSpan coreH
         var meetingStartTime = TimeOnly.FromDateTime(meeting.StartDateTime);
         var meetingEndTime = TimeOnly.FromDateTime(meeting.EndDateTime);
 
-        foreach (var slot in slots)
+        foreach (var slot in Slots)
         {
             if(slot.IsMeetingInSlot(meetingStartTime, meetingEndTime))
             {

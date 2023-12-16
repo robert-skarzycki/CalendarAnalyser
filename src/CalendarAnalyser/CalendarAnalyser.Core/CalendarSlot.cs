@@ -8,19 +8,24 @@ internal class CalendarSlot(TimeOnly startTime, TimeSpan length)
 {
     public TimeOnly StartTime { get; } = startTime;
     public TimeOnly EndTime { get; } = startTime.Add(length);    
-    private readonly ICollection<string> categories = new[] { Constants.FreeCategoryName };
+    public ICollection<string> Categories = new List<string> { Constants.FreeCategoryName };
 
     public bool IsMeetingInSlot(TimeOnly meetingStart, TimeOnly meetingEnd) => (StartTime < meetingStart && EndTime > meetingStart) ||
         (StartTime < meetingEnd && EndTime > meetingStart) || (StartTime > meetingStart && StartTime < meetingEnd && EndTime < meetingEnd && EndTime > meetingStart);
 
     public void AddCategory(string categoryName)
     {
-        if (categories.Count == 1 && categories.First() == Constants.FreeCategoryName)
+        if (Categories.Count == 1 && Categories.First() == Constants.FreeCategoryName)
         {
-            categories.Clear();
+            Categories.Clear();
         }
 
-        categories.Add(categoryName);
+        if(Categories.Contains(categoryName))
+        {
+            return;
+        }
+
+        Categories.Add(categoryName);
     }
 }
     
