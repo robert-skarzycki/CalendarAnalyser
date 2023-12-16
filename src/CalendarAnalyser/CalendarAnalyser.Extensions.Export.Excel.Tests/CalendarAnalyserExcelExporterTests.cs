@@ -10,13 +10,17 @@ namespace CalendarAnalyser.Extensions.Export.Excel.Tests
         {
             var day1 = new DateTime(2023, 7, 31);
             var day2 = new DateTime(2023, 8, 1);
+
+            var categoriesResult = new CalendarCategoriesAnalysisResult(new Dictionary<string, TimeSpan>()
+                    {
+                        { DummyCategory, new TimeSpan (1, 30, 0) },
+                        { Constants.FreeCategoryName, new TimeSpan (3, 30, 0) }
+                    });
+
+
             var result = new CalendarAnalysisResult
             {
-                CategoriesAnalysis =
-                    new CalendarCategoriesAnalysisResult(new Dictionary<string, TimeSpan>()
-                    {
-                        { DummyCategory, new TimeSpan (1, 30, 0) }
-                    }, TimeSpan.FromHours(5)),
+                CategoriesAnalysis = categoriesResult,
                 CalendarSlots = new[]
                 {
                     CalendarSlot(day1, 9, 0, Constants.FreeCategoryName),
@@ -35,6 +39,6 @@ namespace CalendarAnalyser.Extensions.Export.Excel.Tests
             await CalendarAnalyserExcelExporter.Export("test.xlsx", result);
         }
 
-        private CalendarSlot CalendarSlot(DateTime date, int hours, int minutes, string category) => new(date.AddHours(hours).AddMinutes(minutes), category);
+        private CalendarResultSlot CalendarSlot(DateTime date, int hours, int minutes, string category) => new(date.AddHours(hours).AddMinutes(minutes), category);
     }
 }

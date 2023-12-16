@@ -29,7 +29,7 @@ public class CalendarAnalysisEngine
         var result = new CalendarAnalysisResult
         {
             CategoriesAnalysis = new CalendarCategoriesAnalysisResult(totalDurationPerCategory),
-            //CalendarSlots = calendarSlots
+            CalendarSlots = workingDays.SelectMany(wd => wd.Slots.Select(s => new CalendarResultSlot(wd.Date.ToDateTime(s.StartTime), string.Join(";", s.Categories))))
         };
 
         return result;
