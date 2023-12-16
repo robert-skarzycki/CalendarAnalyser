@@ -24,11 +24,11 @@ public class CalendarAnalysisEngine
 
         AddMeetingsToDays(workingDays, filteredMeetings);
 
-        var (totalWorkingTime, totalDurationPerCategory) = CalculateTotalDurationPerCategory(workingDays);
+        var totalDurationPerCategory = CalculateTotalDurationPerCategory(workingDays);
 
         var result = new CalendarAnalysisResult
         {
-            CategoriesAnalysis = new CalendarCategoriesAnalysisResult(totalDurationPerCategory, totalWorkingTime),
+            CategoriesAnalysis = new CalendarCategoriesAnalysisResult(totalDurationPerCategory),
             //CalendarSlots = calendarSlots
         };
 
@@ -78,13 +78,11 @@ public class CalendarAnalysisEngine
         }
     }
 
-    private (TimeSpan, Dictionary<string, TimeSpan>) CalculateTotalDurationPerCategory(ICollection<WorkingDay> workingDays)
+    private Dictionary<string, TimeSpan> CalculateTotalDurationPerCategory(ICollection<WorkingDay> workingDays)
     {
         var result = configuration.Rules.Select(r => r.Category).Distinct().ToDictionary(category => category, _ => TimeSpan.Zero);
         result.Add(Constants.OtherCategoryName, TimeSpan.Zero);
         result.Add(Constants.FreeCategoryName, TimeSpan.Zero);
-
-        var totalWorkingTime = TimeSpan.Zero;
 
         void AddToCategory(string category, TimeSpan duration)
         {
@@ -93,8 +91,6 @@ public class CalendarAnalysisEngine
 
         foreach (var workingDay in workingDays)
         {
-            totalWorkingTime += workingDay.WorkingTime;
-
             foreach (var slot in workingDay.Slots)
             {
                 if (slot.Categories.Count == 1)
@@ -112,6 +108,6 @@ public class CalendarAnalysisEngine
             }
         }
 
-        return (totalWorkingTime, result);
+        return result;
     }
 }
