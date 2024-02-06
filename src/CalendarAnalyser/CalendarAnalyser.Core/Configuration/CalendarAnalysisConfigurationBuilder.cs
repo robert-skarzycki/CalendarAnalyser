@@ -5,34 +5,33 @@ namespace CalendarAnalyser.Core.Configuration;
 
 public class CalendarAnalysisConfigurationBuilder 
 {
-    internal readonly CalendarAnalysisConfiguration configuration = new()
-    {
-        CoreHoursStartTime = TimeSpan.FromHours(9),
-        CoreHoursEndTime = TimeSpan.FromHours(15),
-        OnlyWorkingDays = true,
-        TimeResolution = TimeSpan.FromMinutes(30),
-        Rules = new List<IAnalysisRule>(),
-        LogAction = _ => { },
-        FilterOutAllDayEvents = false,
-        FocusSpotSlotsNumberLength = 4,
-        CollectMeetingsPerCategory = false,
-    };
+    private TimeSpan timeResolution = TimeSpan.FromMinutes(30);
+    private TimeSpan coreHoursStartTime = TimeSpan.FromHours(9);
+    private TimeSpan coreHoursEndTime = TimeSpan.FromHours(15);
+    private List<IAnalysisRule> rules = [];
+    private bool onlyWorkingDays = true;
+    private DateTime analysisStartDate;
+    private DateTime analysisEndDate;
+    private Action<string> logAction = _ => { };
+    private bool filterOutAllDayEvents = false;
+    private int focusSpotSlotsNumberLength = 4;
+    private bool collectMeetingsPerCategory = false;
 
     public CalendarAnalysisConfigurationBuilder WithTimeResolution(TimeSpan timeResolution)
     {
-        configuration.TimeResolution = timeResolution;
+        this.timeResolution = timeResolution;
         return this;
     }
 
     public CalendarAnalysisConfigurationBuilder WithCoreHoursStartAt(TimeSpan coreHoursStartAt)
     {
-        configuration.CoreHoursStartTime = coreHoursStartAt;
+        this.coreHoursStartTime = coreHoursStartAt;
         return this;
     }
 
     public CalendarAnalysisConfigurationBuilder WithCoreHoursEndAt(TimeSpan coreHoursEndAt)
     {
-        configuration.CoreHoursEndTime = coreHoursEndAt;
+        this.coreHoursEndTime = coreHoursEndAt;
         return this;
     }
 
@@ -40,41 +39,60 @@ public class CalendarAnalysisConfigurationBuilder
     {
         foreach (var rule in rules)
         {
-            configuration.Rules.Add(rule);
+            this.rules.Add(rule);
         }
         return this;
     }
 
     public CalendarAnalysisConfigurationBuilder WithOnlyWorkingDays()
     {
-        configuration.OnlyWorkingDays = true;
+        this.onlyWorkingDays = true;
         return this;
     }
 
     public CalendarAnalysisConfigurationBuilder WithAnalysisDateRange(DateTime analysisStartDate, DateTime analysisEndDate)
     {
-        configuration.AnalysisStartDate = analysisStartDate;
-        configuration.AnalysisEndDate = analysisEndDate;
+        this.analysisStartDate = analysisStartDate;
+        this.analysisEndDate = analysisEndDate;
 
         return this;
     }
 
     public CalendarAnalysisConfigurationBuilder WithLogAction(Action<string> logAction)
     {
-        configuration.LogAction = logAction; 
+        this.logAction = logAction; 
         
         return this;
     }
 
     public CalendarAnalysisConfigurationBuilder WithoutAllDayEvents()
     {
-        configuration.FilterOutAllDayEvents = true;
+        this.filterOutAllDayEvents = true;
+
+        return this;
+    }
+
+    public CalendarAnalysisConfigurationBuilder WithCollectingMeetingsPerCategory()
+    {
+        this.collectMeetingsPerCategory = true;
 
         return this;
     }
 
     public CalendarAnalysisConfiguration Build()
     {
-        return configuration;
+        return new CalendarAnalysisConfiguration(
+            analysisStartDate,
+            analysisEndDate,
+            rules,
+            coreHoursStartTime,
+            coreHoursEndTime,
+            onlyWorkingDays,
+            timeResolution,
+            filterOutAllDayEvents,
+            focusSpotSlotsNumberLength,
+            collectMeetingsPerCategory,
+            logAction
+            );
     }
 }

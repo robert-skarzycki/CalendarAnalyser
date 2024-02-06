@@ -11,12 +11,11 @@ public class MeetingsCategoryMatcherTests
 
     public MeetingsCategoryMatcherTests()
     {
-        configuration = new CalendarAnalysisConfiguration
-        {
-            Rules = new IAnalysisRule[] {
+        configuration = new CalendarAnalysisConfigurationBuilder().WithRules
+        (new IAnalysisRule[] {
                 new RegexAnalysisRule(new Regex("Dummy.*"), DummyCategoryName)
             }
-        };
+        ).Build();
     }
 
     [Fact]
