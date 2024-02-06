@@ -22,7 +22,7 @@ public class MeetingsCategoryMatcherTests
     [Fact]
     public void WhenRuleMatches_ReturnsCategoryName()
     {
-        var result = MeetingsCategoryMatcher.Match(new DummyMeeting("DummyMeeting"), configuration);
+        var result = MeetingsCategoryMatcher.Match(DummyMeetingHelper.Build("DummyMeeting"), configuration);
 
         result.Should().Be(DummyCategoryName);        
     }
@@ -30,7 +30,7 @@ public class MeetingsCategoryMatcherTests
     [Fact]
     public void WhenNoRuleMatches_ReturnsOtherCategoryName()
     {
-        var result = MeetingsCategoryMatcher.Match(new DummyMeeting("SomeMeeting"), configuration);
+        var result = MeetingsCategoryMatcher.Match(DummyMeetingHelper.Build("SomeMeeting"), configuration);
 
         result.Should().Be(Constants.OtherCategoryName);
     }

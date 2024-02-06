@@ -10,7 +10,7 @@ public class RegexAnalysisRuleTests
     {
         var sut = new RegexAnalysisRule(new Regex("Dum.*"), "some-category");
 
-        var meeting = new DummyMeeting("Dummy");
+        var meeting = DummyMeetingHelper.Build("Dummy");
 
         var result = sut.IsMatch(meeting);
 
@@ -22,7 +22,7 @@ public class RegexAnalysisRuleTests
     {
         var sut = new RegexAnalysisRule(new Regex("Dum.*"), "some-category");
 
-        var meeting = new DummyMeeting("NotDummy");
+        var meeting = DummyMeetingHelper.Build("NotDummy");
 
         var result = sut.IsMatch(meeting);
 
