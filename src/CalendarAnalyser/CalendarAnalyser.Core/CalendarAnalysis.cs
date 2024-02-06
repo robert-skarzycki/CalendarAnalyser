@@ -23,13 +23,7 @@ public class CalendarAnalysis
 
         AddMeetingsToDays(filteredMeetings);
     }
-    public Dictionary<DateOnly, IEnumerable<ICalendarResultSlot>> BuildCalendarSlotsPerDay()
-    {
-        var resultsSlotsPerWorkingDay = workingDays.ToDictionary(wd => wd.Date, wd => wd.Slots.Select(s => new CalendarResultSlot(s.StartTime, string.Join(";", s.Categories)) as ICalendarResultSlot));
-
-        return resultsSlotsPerWorkingDay;
-    }
-
+    
     public ICalendarCategoriesAnalysisResult AnalyzeCategories()
     {
         var totalDurationPerCategory = CalculateTotalDurationPerCategory(workingDays);
@@ -37,6 +31,42 @@ public class CalendarAnalysis
         var categoriesAnalysisResult = new CalendarCategoriesAnalysisResult(totalDurationPerCategory);
 
         return categoriesAnalysisResult;
+    }
+
+    public Dictionary<DateOnly, IEnumerable<ICalendarResultSlot>> BuildCalendarSlotsPerDay()
+    {
+        ICalendarResultSlot ConvertWorkingDaySlotToResultSlot(CalendarSlot s) => new CalendarResultSlot(s.StartTime, string.Join(";", s.Categories));
+
+        var calendarSlotsPerDay = workingDays.ToDictionary(wd => wd.Date, wd => wd.Slots.Select(ConvertWorkingDaySlotToResultSlot));
+
+        return calendarSlotsPerDay;
+    }
+
+    public Dictionary<DateOnly, int> FindFocusSpotsPerDay()
+    {
+        int CountFocusSpotsInDay(WorkingDay workingDay)
+        {
+            var focusSpotsCount = 0;
+            var focusSpotCandidateLength = 0;
+            foreach(var slot in workingDay.Slots)
+            {
+                if(slot.Categories.Count == 1 && slot.Categories.First() == Constants.FreeCategoryName)
+                {
+                    focusSpotCandidateLength++;
+                    if(focusSpotCandidateLength == configuration.FocusSpotSlotsNumberLength)
+                    {
+                        focusSpotCandidateLength = 0;
+                        focusSpotsCount++;
+                    }
+                }
+            }
+
+            return focusSpotsCount;
+        }
+
+        var focusSpotsPerDay = workingDays.ToDictionary(wd => wd.Date, CountFocusSpotsInDay);
+
+        return focusSpotsPerDay;
     }
 
     private bool ShouldMeetingBeIncluded(Meeting meeting)

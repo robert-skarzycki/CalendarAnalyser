@@ -61,4 +61,6 @@ public class CalendarAnalysisConfiguration
 
     public Action<string> LogAction { get; set; }
     public bool FilterOutAllDayEvents { get; set; }
+
+    public int FocusSpotSlotsNumberLength { get; set; }
 }

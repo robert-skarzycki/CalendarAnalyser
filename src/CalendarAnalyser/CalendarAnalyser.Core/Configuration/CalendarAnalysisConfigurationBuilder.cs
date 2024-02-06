@@ -13,7 +13,8 @@ public class CalendarAnalysisConfigurationBuilder
         TimeResolution = TimeSpan.FromMinutes(30),
         Rules = new List<IAnalysisRule>(),
         LogAction = _ => { },
-        FilterOutAllDayEvents = false
+        FilterOutAllDayEvents = false,
+        FocusSpotSlotsNumberLength = 4
     };
 
     public CalendarAnalysisConfigurationBuilder WithTimeResolution(TimeSpan timeResolution)
