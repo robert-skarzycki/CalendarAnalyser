@@ -14,7 +14,8 @@ public class CalendarAnalysisConfigurationBuilder
         Rules = new List<IAnalysisRule>(),
         LogAction = _ => { },
         FilterOutAllDayEvents = false,
-        FocusSpotSlotsNumberLength = 4
+        FocusSpotSlotsNumberLength = 4,
+        CollectMeetingsPerCategory = false,
     };
 
     public CalendarAnalysisConfigurationBuilder WithTimeResolution(TimeSpan timeResolution)

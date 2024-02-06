@@ -63,4 +63,6 @@ public class CalendarAnalysisConfiguration
     public bool FilterOutAllDayEvents { get; set; }
 
     public int FocusSpotSlotsNumberLength { get; set; }
+
+    public bool CollectMeetingsPerCategory { get; set; }
 }

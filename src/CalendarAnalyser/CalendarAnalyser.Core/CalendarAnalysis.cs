@@ -10,6 +10,7 @@ public class CalendarAnalysis
 {
     private readonly CalendarAnalysisConfiguration configuration;
     private readonly List<WorkingDay> workingDays;
+    private readonly Dictionary<string, List<string>> meetingNamesPerCategory;
 
     public CalendarAnalysis(CalendarAnalysisConfiguration configuration, ICollection<Meeting> meetings)
     {
@@ -22,6 +23,8 @@ public class CalendarAnalysis
         workingDays = BuildWorkingDays().ToList();
 
         AddMeetingsToDays(filteredMeetings);
+
+        meetingNamesPerCategory = BuildMeetingNamesPerCategoryDictionary();
     }
     
     public ICalendarCategoriesAnalysisResult AnalyzeCategories()
@@ -69,6 +72,20 @@ public class CalendarAnalysis
         return focusSpotsPerDay;
     }
 
+    public Dictionary<string,IEnumerable<string>> DumpMeetingSubjectPerCategory()
+    {
+        return this.meetingNamesPerCategory.ToDictionary(pair => pair.Key, pair => pair.Value as IEnumerable<string>);
+    }
+
+    private Dictionary<string, List<string>> BuildMeetingNamesPerCategoryDictionary()
+    {
+        var result = configuration.Rules.Select(r => r.Category).Distinct().ToDictionary(c => c, _ => new List<string>());
+        result.Add(Constants.OtherCategoryName, []);
+        result.Add(Constants.FreeCategoryName, []);
+
+        return result;
+    }
+
     private bool ShouldMeetingBeIncluded(Meeting meeting)
     {
         if (configuration.FilterOutAllDayEvents && meeting.IsAllDay) { 
@@ -89,9 +106,26 @@ public class CalendarAnalysis
         foreach (var meeting in meetings)
         {
             var category = MeetingsCategoryMatcher.Match(meeting, configuration);
+
+            if (configuration.CollectMeetingsPerCategory)
+            {
+                AddMeetingToCategory(category, meeting);
+            }
             
             var meetingWorkingDay = workingDays.FirstOrDefault(wd => wd.Date == DateOnly.FromDateTime(meeting.StartDateTime));
             meetingWorkingDay?.AddMeetingWithCategory(meeting, category);
+        }
+    }
+
+    private void AddMeetingToCategory(string category, Meeting meeting)
+    {
+        if (meetingNamesPerCategory.ContainsKey(category))
+        {
+            meetingNamesPerCategory[category].Add(meeting.Subject);
+        }
+        else
+        {
+            meetingNamesPerCategory[category] = [meeting.Subject];
         }
     }
 
