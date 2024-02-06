@@ -3,7 +3,7 @@ using FluentAssertions;
 using System.Text.RegularExpressions;
 
 namespace CalendarAnalyser.Core.Tests;
-public partial class CalendarAnalysisTests
+public partial class AnalyzeCategories
 {
     public class FindFocusSpotsPerDay
     {
