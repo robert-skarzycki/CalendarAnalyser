@@ -6,33 +6,37 @@ using System.Linq;
 
 namespace CalendarAnalyser.Core;
 
-public class CalendarAnalysisEngine
+public class CalendarAnalysis
 {
     private readonly CalendarAnalysisConfiguration configuration;
+    private readonly List<WorkingDay> workingDays;
 
-    public CalendarAnalysisEngine(CalendarAnalysisConfiguration configuration)
+    public CalendarAnalysis(CalendarAnalysisConfiguration configuration, ICollection<Meeting> meetings)
     {
         this.configuration = configuration;
-    }
 
-    public ICalendarAnalysisResult Analyze(ICollection<Meeting> meetings)
-    {
         if (meetings == null) { throw new ArgumentNullException(nameof(meetings)); }
 
         var filteredMeetings = meetings.Where(ShouldMeetingBeIncluded).ToList();
 
-        var workingDays = BuildWorkingDays().ToList();
+        workingDays = BuildWorkingDays().ToList();
 
-        AddMeetingsToDays(workingDays, filteredMeetings);
+        AddMeetingsToDays(filteredMeetings);
+    }
+    public Dictionary<DateOnly, IEnumerable<ICalendarResultSlot>> BuildCalendarSlotsPerDay()
+    {
+        var resultsSlotsPerWorkingDay = workingDays.ToDictionary(wd => wd.Date, wd => wd.Slots.Select(s => new CalendarResultSlot(s.StartTime, string.Join(";", s.Categories)) as ICalendarResultSlot));
 
+        return resultsSlotsPerWorkingDay;
+    }
+
+    public ICalendarCategoriesAnalysisResult AnalyzeCategories()
+    {
         var totalDurationPerCategory = CalculateTotalDurationPerCategory(workingDays);
 
         var categoriesAnalysisResult = new CalendarCategoriesAnalysisResult(totalDurationPerCategory);
-        var resultsSlotsPerWorkingDay = workingDays.ToDictionary(wd => wd.Date, wd => wd.Slots.Select(s => new CalendarResultSlot(s.StartTime, string.Join(";", s.Categories)) as ICalendarResultSlot));
 
-        var result = new CalendarAnalysisResult(categoriesAnalysisResult, resultsSlotsPerWorkingDay);
-
-        return result;
+        return categoriesAnalysisResult;
     }
 
     private bool ShouldMeetingBeIncluded(Meeting meeting)
@@ -50,7 +54,7 @@ public class CalendarAnalysisEngine
         return true;
     }
 
-    private void AddMeetingsToDays(List<WorkingDay> workingDays, ICollection<Meeting> meetings)
+    private void AddMeetingsToDays(ICollection<Meeting> meetings)
     {
         foreach (var meeting in meetings)
         {

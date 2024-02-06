@@ -13,7 +13,7 @@ public class CalendarAnalysisEngineTests
             .WithRules(new[] { new RegexAnalysisRule(new Regex("NotDummy"), "NotDummy") })
             .Build();
         
-        var sut = new CalendarAnalysisEngine(configuration);
+        var sut = new CalendarAnalysis(configuration);
 
         var result = sut.Analyze(new[] { 
             DummyMeeting((10, 0),(10, 30)),
@@ -31,7 +31,7 @@ public class CalendarAnalysisEngineTests
             .WithRules(new[] { new RegexAnalysisRule(new Regex("Dummy"), "Dummy") })
             .Build();
 
-        var sut = new CalendarAnalysisEngine(configuration);
+        var sut = new CalendarAnalysis(configuration);
 
         var result = sut.Analyze(new[] {
             DummyMeeting((10, 0), (10, 30)),
@@ -49,7 +49,7 @@ public class CalendarAnalysisEngineTests
             .WithCoreHoursStartAt(TimeSpan.FromHours(8))
             .Build();
 
-        var sut = new CalendarAnalysisEngine(configuration);
+        var sut = new CalendarAnalysis(configuration);
 
         var result = sut.Analyze(new[] {
             DummyMeeting((7, 0), (9, 0))
@@ -65,7 +65,7 @@ public class CalendarAnalysisEngineTests
             .WithCoreHoursStartAt(TimeSpan.FromHours(8))
             .Build();
 
-        var sut = new CalendarAnalysisEngine(configuration);
+        var sut = new CalendarAnalysis(configuration);
 
         var result = sut.Analyze(new[] {
             DummyMeeting((7, 0), (7, 30))
@@ -83,7 +83,7 @@ public class CalendarAnalysisEngineTests
             .WithOnlyWorkingDays()
             .Build();
 
-        var sut = new CalendarAnalysisEngine(configuration);
+        var sut = new CalendarAnalysis(configuration);
 
         var result = sut.Analyze(new[] {
             DummyMeeting(7, 31, (8, 0), (16, 0)),
